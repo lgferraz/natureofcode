@@ -6,7 +6,8 @@ function make2DArray(cols, rows){
 	return arr;
 }
 
-let grid 
+let grid;
+let cols;
 let rows;
 let resolution = 20;
 
@@ -33,7 +34,7 @@ function draw(){
 			if (grid[col][row] == 1){
 				fill(0);
 				stroke(255);
-				rect(x, y, resolution-1, resolution-1);
+				rect(x, y, resolution, resolution);
 			}
 		}
 	}
@@ -48,25 +49,18 @@ function draw(){
 			
 			let state = grid[col][row];
 			
-			//"limpa" os lados
 			
-			if (col==0 || col==cols-1 || row==0 || row==rows-1){
-				next[col][row] = state;
+			//count ngbh
+			let sum = 0;
+			let nghb = countNghb(grid, col, row);
+
+			//rules
+			if (state==0 && nghb==3){
+				next[col][row] = 1;
+			}else if (state==1 && (nghb<2 || nghb>3)){
+				next[col][row] = 0;
 			}else {
-			
-				//count ngbh
-					let sum = 0;
-					let nghb = countNghb(grid, col, row);
-
-					//rules
-
-					if (state==0 && nghb==3){
-						next[col][row] = 1;
-					}else if (state==1 && (nghb<2 || nghb>3)){
-						next[col][row] = 0;
-					}else {
-						next[col][row] = state;
-					}
+				next[col][row] = state;
 			}
 			
 		}
@@ -80,7 +74,9 @@ function countNghb(grid, x, y){
 	let sum = 0;
 	for (let col=-1; col<2; col++){
 		for (let row=-1; row<2; row++) {
-			sum += grid[x+col][y+row];
+			let coll = (x + col + cols) % cols;
+			let roww = (y + row + rows) % rows;
+			sum += grid[coll][roww];
 		}
 	}
 	sum -= grid[x][y];
